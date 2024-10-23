@@ -20,12 +20,24 @@ const isGitRepo = (folderPath) => {
   return fs.existsSync(path.join(folderPath, '.git'));
 };
 
-// Recursively scan for directories containing a .git folder, up to 3 levels deep and ignoring node_modules
+// Recursively scan for directories containing a .git folder, up to 4 levels deep and ignoring node_modules
 const getGitRepos = (baseDir) => {
   const allDirs = glob.sync('**/*/', {
     cwd: baseDir,
-    ignore: '**/node_modules/**',
-    maxDepth: 3,
+    ignore: [
+      // ignore node_modules and
+      '**/node_modules/**',
+      // avoid notifications on macbook when running on ~
+      '**/Applications/**',
+      '**/Desktop/**',
+      '**/Downloads/**',
+      '**/Library/**',
+      '**/Movies/**',
+      '**/Music/**',
+      '**/Pictures/**',
+      '**/Public/**',
+    ],
+    maxDepth: 4,
   });
   const gitRepos = allDirs.map((dir) => path.join(baseDir, dir)).filter(isGitRepo);
   return gitRepos;
