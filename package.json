@@ -1,17 +1,21 @@
 {
-  "name": "cdg",
+  "name": "lcode",
+  "description": "A CLI tool to search your git repos and open it in vscode",
   "version": "1.0.0",
   "main": "index.js",
+  "bin": {
+    "lcode": "./index.mjs"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "type": "module",
   "dependencies": {
     "glob": "^11.0.0",
-    "inquirer": "^12.0.0"
+    "inquirer": "^9.3.7",
+    "inquirer-autocomplete-prompt": "^3.0.1"
   }
 }

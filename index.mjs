@@ -4,6 +4,11 @@ import path from 'path';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
 import { fileURLToPath } from 'url';
+import inquirerAutocompletePrompt from 'inquirer-autocomplete-prompt';
+import { execSync } from 'child_process';
+
+// Register the autocomplete prompt
+inquirer.registerPrompt('autocomplete', inquirerAutocompletePrompt);
 
 // Get the directory from the first argument or default to ~/git
 const __filename = fileURLToPath(import.meta.url);
@@ -49,22 +54,38 @@ const main = async () => {
   try {
     const answer = await inquirer.prompt([
       {
-        type: 'list',
+        type: 'autocomplete',
         name: 'repo',
         message: 'Select a git repository:',
-        choices: choices,
+        source: (answersSoFar, input) => {
+          input = input || '';
+          return new Promise((resolve) => {
+            const filtered = choices.filter((choice) => choice.name.toLowerCase().includes(input.toLowerCase()));
+            resolve(filtered);
+          });
+        },
+        filter: (val) => {
+          // Transform the selected value if needed
+          return path.resolve(BASE_DIR, val);
+        },
       },
     ]);
 
+    // Output only the selected directory path
     console.log(`You selected: ${answer.repo}`);
+
+    // Run a command in the selected directory
+    const command = `cd ${answer.repo} && code .`; // Replace 'ls' with the command you want to run
+    execSync(command, { stdio: 'inherit' });
   } catch (error) {
     if (error.isTtyError) {
-      console.log("Prompt couldn't be rendered in the current environment");
+      console.error("Prompt couldn't be rendered in the current environment");
     } else if (error.message.includes('User force closed the prompt')) {
-      console.log('Prompt was closed. Exiting...');
+      console.error('Prompt was closed. Exiting...');
     } else {
       console.error('An error occurred:', error);
     }
+    process.exit(1); // Ensure the script exits with an error code
   }
 };
 
