@@ -5,32 +5,70 @@ import { glob } from 'glob';
 import inquirer from 'inquirer';
 import { fileURLToPath } from 'url';
 import inquirerAutocompletePrompt from 'inquirer-autocomplete-prompt';
-import { execSync } from 'child_process';
 
 // Register the autocomplete prompt
 inquirer.registerPrompt('autocomplete', inquirerAutocompletePrompt);
 
-// Get the directory from the first argument or default to ~/git
+// Get the directory from the first argument or default to the current directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const BASE_DIR = path.resolve(process.argv[2] || '.');
 
-// Get the maxDepth from the second argument or default to 3
-const MAX_DEPTH = parseInt(process.argv[3], 10) || 3;
+// Path to the configuration file
+const configPath = path.resolve(process.env.HOME, '.lcodeconfig');
+
+// Check if the program is called with --init
+if (process.argv.includes('--init')) {
+  const defaultConfig = {
+    path: '~',
+    maxDepth: 5,
+  };
+  fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
+  console.log(`Configuration file created at ${configPath}:`);
+  console.log(`${JSON.stringify(defaultConfig, null, 2)}`);
+  process.exit(0);
+}
+
+// Check if the program is called with --cleanup
+if (process.argv.includes('--cleanup')) {
+  if (fs.existsSync(configPath)) {
+    fs.unlinkSync(configPath);
+    console.log(`Configuration file at ${configPath} has been removed.`);
+  } else {
+    console.log(`No configuration file found at ${configPath}.`);
+  }
+  process.exit(0);
+}
+
+console.log(configPath);
+let config = {};
+if (fs.existsSync(configPath)) {
+  console.log('Loading configuration from .lcodeconfig');
+  config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+  console.log(config);
+}
+
+// Function to expand ~ to the home directory
+const expandHomeDir = (dir) => {
+  if (dir?.startsWith('~')) {
+    return path.join(process.env.HOME, dir.slice(1));
+  }
+  return dir;
+};
+
+const BASE_DIR = path.resolve(process.argv[2] || expandHomeDir(config.path) || '.');
+const MAX_DEPTH = parseInt(process.argv[3], 10) || config.maxDepth || 3;
 
 // Function to check if a folder is a git repo
 const isGitRepo = (folderPath) => {
   return fs.existsSync(path.join(folderPath, '.git'));
 };
 
-// Recursively scan for directories containing a .git folder, up to 4 levels deep and ignoring node_modules
+// Recursively scan for directories containing a .git folder, up to maxDepth levels deep and ignoring node_modules and default macOS directories
 const getGitRepos = (baseDir, maxDepth) => {
   const allDirs = glob.sync('**/*/', {
     cwd: baseDir,
     ignore: [
-      // ignore node_modules and
       '**/node_modules/**',
-      // avoid notifications on macbook when running on ~
       '**/Applications/**',
       '**/Desktop/**',
       '**/Downloads/**',

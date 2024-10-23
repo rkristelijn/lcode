@@ -5,14 +5,16 @@
     "type": "git",
     "url": "git+https://github.com/rkristelijn/lcode.git"
   },
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "index.mjs",
   "bin": {
     "lcode": "index.mjs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.mjs ~ 5"
+    "start": "node index.mjs",
+    "arguments": "node index.mjs ~ 5",
+    "init": "node index.mjs --init",
+    "cleanup": "node index.mjs --cleanup"
   },
   "keywords": [
     "cli",

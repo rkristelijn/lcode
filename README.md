@@ -8,7 +8,10 @@ Using global install:
 
 ```shell
 npm i -g @rkristelijn/lcode
-lcode [path] [maxDepth]
+lcode # runs in the current directory with maxdepth to 3
+lcode ~ 5 # runs in ~ with maxdepth 5
+lcode --init # creates a config file with default ~ and 5
+lcode --cleanup # removes the config file
 ```
 
 Using npx:
@@ -22,17 +25,26 @@ npx @rkristelijn/lcode [path] [maxDepth]
 1. `path` (optional): The path to start searching from. Defaults to the current directory if not provided.
 2. `maxDepth` (optional): The maximum depth to search for repositories. Defaults to 3 if not provided.
 
+### Configuration
+
+You can create a configuration file named `.lcodeconfig` in your home directory (`~`) to set default values for the `path` and `maxDepth` arguments. Example:
+
+```json
+{
+  "path": "~/my-repos",
+  "maxDepth": 3
+}
+```
+
 ### Examples
 
 Using global install:
 
 ```shell
 lcode
-lcode ~
+lcode ~/my-repos
 lcode ~/my-repos 4
 ```
-
-> Note, running lcode on `~` may accidentaly trigger some warnings. If so, some additional directories need to be excluded. Please create an issue or raise a PR.
 
 Using npx:
 
