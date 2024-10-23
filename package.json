@@ -1,8 +1,12 @@
 {
   "name": "lcode",
   "description": "A CLI tool to search your git repos and open it in vscode",
+  "repository": {
+    "type": "https",
+    "url": "https://github.com/rkristelijn/lcode"
+  },
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.mjs",
   "bin": {
     "lcode": "./index.mjs"
   },
@@ -10,7 +14,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "rkristelijn",
   "license": "ISC",
   "type": "module",
   "dependencies": {
