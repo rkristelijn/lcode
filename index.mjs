@@ -5,6 +5,7 @@ import { glob } from 'glob';
 import inquirer from 'inquirer';
 import { fileURLToPath } from 'url';
 import inquirerAutocompletePrompt from 'inquirer-autocomplete-prompt';
+import { execSync } from 'child_process';
 
 // Register the autocomplete prompt
 inquirer.registerPrompt('autocomplete', inquirerAutocompletePrompt);
