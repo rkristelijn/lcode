@@ -46,16 +46,26 @@ const main = async () => {
     value: repo,
   }));
 
-  const answer = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'repo',
-      message: 'Select a git repository:',
-      choices: choices,
-    },
-  ]);
+  try {
+    const answer = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'repo',
+        message: 'Select a git repository:',
+        choices: choices,
+      },
+    ]);
 
-  console.log(`You selected: ${answer.repo}`);
+    console.log(`You selected: ${answer.repo}`);
+  } catch (error) {
+    if (error.isTtyError) {
+      console.log("Prompt couldn't be rendered in the current environment");
+    } else if (error.message.includes('User force closed the prompt')) {
+      console.log('Prompt was closed. Exiting...');
+    } else {
+      console.error('An error occurred:', error);
+    }
+  }
 };
 
 main();
