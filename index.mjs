@@ -15,13 +15,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const BASE_DIR = path.resolve(process.argv[2] || '.');
 
+// Get the maxDepth from the second argument or default to 3
+const MAX_DEPTH = parseInt(process.argv[3], 10) || 3;
+
 // Function to check if a folder is a git repo
 const isGitRepo = (folderPath) => {
   return fs.existsSync(path.join(folderPath, '.git'));
 };
 
 // Recursively scan for directories containing a .git folder, up to 4 levels deep and ignoring node_modules
-const getGitRepos = (baseDir) => {
+const getGitRepos = (baseDir, maxDepth) => {
   const allDirs = glob.sync('**/*/', {
     cwd: baseDir,
     ignore: [
@@ -37,7 +40,7 @@ const getGitRepos = (baseDir) => {
       '**/Pictures/**',
       '**/Public/**',
     ],
-    maxDepth: 4,
+    maxDepth: maxDepth,
   });
   const gitRepos = allDirs.map((dir) => path.join(baseDir, dir)).filter(isGitRepo);
   return gitRepos;
@@ -51,7 +54,7 @@ const main = async () => {
     return;
   }
 
-  const gitRepos = getGitRepos(BASE_DIR);
+  const gitRepos = getGitRepos(BASE_DIR, MAX_DEPTH);
 
   if (gitRepos.length === 0) {
     console.log('No git repositories found.');
