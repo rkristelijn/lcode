@@ -22,6 +22,9 @@ if (process.argv.includes('--init')) {
   const defaultConfig = {
     path: '~',
     maxDepth: 5,
+    execute: 'code .',
+    execute2: 'zsh',
+    execute3: '. ~/.nvm/nvm.sh && nvm use && code .',
   };
   fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
   console.log(`Configuration file created at ${configPath}:`);
@@ -58,6 +61,7 @@ const expandHomeDir = (dir) => {
 
 const BASE_DIR = path.resolve(process.argv[2] || expandHomeDir(config.path) || '.');
 const MAX_DEPTH = parseInt(process.argv[3], 10) || config.maxDepth || 3;
+const EXECUTE = process.argv[4] || config.execute || 'code .';
 
 // Function to check if a folder is a git repo
 const isGitRepo = (folderPath) => {
@@ -128,9 +132,7 @@ const main = async () => {
     // Output only the selected directory path
     console.log(`You selected: ${answer.repo}`);
 
-    // Run a command in the selected directory
-    const command = `cd ${answer.repo} && code .`; // Replace 'ls' with the command you want to run
-    execSync(command, { stdio: 'inherit' });
+    execSync(`cd ${answer.repo} && ${EXECUTE}`, { stdio: 'inherit', shell: '/bin/bash' });
   } catch (error) {
     if (error.isTtyError) {
       console.error("Prompt couldn't be rendered in the current environment");

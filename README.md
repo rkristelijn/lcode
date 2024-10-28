@@ -1,16 +1,21 @@
 # lcode
 
-This CLI tool lists all your repositories, and upon selection, it starts Visual Studio Code.
+This CLI tool lists all your repositories, and upon selection, it changes path to the repo and starts Visual Studio Code or any other command provided.
 
 ## Usage
 
 Using global install:
 
 ```shell
-npm i -g @rkristelijn/lcode
+npm i -g @rkristelijn/lcode # install globally
 lcode # runs in the current directory with maxdepth to 3
 lcode ~ 5 # runs in ~ with maxdepth 5
-lcode --init # creates a config file with default ~ and 5
+lcode ~ 5 zsh # runs in ~ with maxdepth 5 and executes zsh instead of vscode
+lcode ~ 5 \". ~/.nvm/nvm.sh && nvm use && code .\" # executes nvm to load proper node version and starts VSCode
+
+# with config file
+lcode --init # creates a config file with default ~ and 5 in ~/.lcodeconfig
+code ~/.lcodeconfig # opens up the config file
 lcode --cleanup # removes the config file
 ```
 
@@ -24,6 +29,7 @@ npx @rkristelijn/lcode [path] [maxDepth]
 
 1. `path` (optional): The path to start searching from. Defaults to the current directory if not provided.
 2. `maxDepth` (optional): The maximum depth to search for repositories. Defaults to 3 if not provided.
+3. `cmd` (optional): The command to execute, defaults to `code .`
 
 ### Configuration
 
@@ -31,34 +37,8 @@ You can create a configuration file named `.lcodeconfig` in your home directory 
 
 ```json
 {
-  "path": "~/my-repos",
-  "maxDepth": 3
+  "path": "~/Documents", // your starting path, like ~
+  "maxDepth": 3, // max depth of searching for git repos
+  "execute": "bash" // executes bash instead of 'code .'
 }
 ```
-
-### Examples
-
-Using global install:
-
-```shell
-lcode
-lcode ~/my-repos
-lcode ~/my-repos 4
-```
-
-Using npx:
-
-```shell
-npx @rkristelijn/lcode
-npx @rkristelijn/lcode ~/my-repos
-npx @rkristelijn/lcode ~/my-repos 4
-```
-
-## Prerequisites
-
-1. You need to execute it from the root where all your repos live.
-   Alternatively, you can run `npx @rkristelijn/lcode ~/my-repos`.
-
-## Background
-
-Actually, I just wanted to `cd` into the selected directory; however, it does, but then exits the program, and you are back in the original working directory. Hence, I started VSCode instead.
