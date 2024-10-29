@@ -11,7 +11,8 @@ npm i -g @rkristelijn/lcode # install globally
 lcode # runs in the current directory with maxdepth to 3
 lcode ~ 5 # runs in ~ with maxdepth 5
 lcode ~ 5 zsh # runs in ~ with maxdepth 5 and executes zsh instead of vscode
-lcode ~ 5 \". ~/.nvm/nvm.sh && nvm use && code .\" # executes nvm to load proper node version and starts VSCode
+lcode ~ 5 \". ~/.nvm/nvm.sh && nvm use && code .\" # executes nvm to load proper node version and starts
+lcode ~ 5 \"[ -f .nvmrc ] && . ~/.nvm/nvm.sh && nvm use; code .\" # only executes nvm when .nvmrc exists to load proper node version and starts
 
 # with config file
 lcode --init # creates a config file with default ~ and 5 in ~/.lcodeconfig
