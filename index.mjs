@@ -24,7 +24,7 @@ if (process.argv.includes('--init')) {
     maxDepth: 5,
     execute: 'code .',
     execute2: 'zsh',
-    execute3: '. ~/.nvm/nvm.sh && nvm use && code .',
+    execute3: '[ -f .nvmrc ] && . ~/.nvm/nvm.sh && nvm use; code .',
   };
   fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
   console.log(`Configuration file created at ${configPath}:`);

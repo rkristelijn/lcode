@@ -2,6 +2,10 @@
 
 This CLI tool lists all your repositories, and upon selection, it changes path to the repo and starts Visual Studio Code or any other command provided.
 
+## Demo
+
+![demo](./docs/demo.mp4)
+
 ## Usage
 
 Using global install:
