@@ -4,7 +4,7 @@ This CLI tool lists all your repositories, and upon selection, it changes path t
 
 ## Demo
 
-![demo](./docs/demo.mp4)
+![demo](./docs/demo.gif)
 
 ## Usage
 
