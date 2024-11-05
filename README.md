@@ -30,13 +30,13 @@ Using npx:
 npx @rkristelijn/lcode [path] [maxDepth]
 ```
 
-### Arguments
+## Arguments
 
 1. `path` (optional): The path to start searching from. Defaults to the current directory if not provided.
 2. `maxDepth` (optional): The maximum depth to search for repositories. Defaults to 3 if not provided.
 3. `cmd` (optional): The command to execute, defaults to `code .`
 
-### Configuration
+## Configuration
 
 You can create a configuration file named `.lcodeconfig` in your home directory (`~`) to set default values for the `path` and `maxDepth` arguments. Example:
 
@@ -47,3 +47,11 @@ You can create a configuration file named `.lcodeconfig` in your home directory 
   "execute": "bash" // executes bash instead of 'code .'
 }
 ```
+
+## Docs
+
+See [https://www.npmjs.com/package/@rkristelijn/lcode](https://www.npmjs.com/package/@rkristelijn/lcode)
+
+## Sponsor me
+
+[Sponsor me](https://github.com/sponsors/rkristelijn/) if you appreciate my work.
