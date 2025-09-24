@@ -6,7 +6,7 @@ import inquirer from 'inquirer';
 import inquirerAutocompletePrompt from 'inquirer-autocomplete-prompt';
 import { execSync } from 'child_process';
 import ora from 'ora';
-import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig } from './src/utils.mjs';
+import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig, getReadmePreview } from './src/utils.mjs';
 import { RepoCache } from './src/cache.mjs';
 
 // Register the autocomplete prompt
@@ -195,7 +195,9 @@ const main = async () => {
     if (process.argv.includes('--list')) {
       gitRepos.forEach((repo, index) => {
         const relativePath = path.relative(BASE_DIR, repo) || path.basename(repo);
-        console.log(`${index}: ${relativePath}`);
+        const preview = getReadmePreview(repo);
+        const display = preview ? `${relativePath} - ${preview}` : relativePath;
+        console.log(`${index}: ${display}`);
       });
       return;
     }
@@ -221,10 +223,14 @@ const main = async () => {
     }
 
     // Interactive mode
-    const choices = gitRepos.map((repo) => ({
-      name: path.relative(BASE_DIR, repo) || path.basename(repo),
-      value: repo,
-    }));
+    const choices = gitRepos.map((repo) => {
+      const name = path.relative(BASE_DIR, repo) || path.basename(repo);
+      const preview = getReadmePreview(repo);
+      return {
+        name: preview ? `${name} - ${preview}` : name,
+        value: repo,
+      };
+    });
 
     const answer = await inquirer.prompt([
       {

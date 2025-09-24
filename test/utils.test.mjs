@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert';
 import path from 'path';
 import fs from 'fs';
-import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig } from '../src/utils.mjs';
+import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig, getReadmePreview } from '../src/utils.mjs';
 
 test('expandHomeDir - expands ~ correctly', () => {
   const result = expandHomeDir('~/test');
@@ -101,4 +101,49 @@ test('isGitRepo - returns false for non-git directory', () => {
   
   // Cleanup
   fs.rmSync(tempDir, { recursive: true });
+});
+test('getReadmePreview - extracts first meaningful line', () => {
+  const tempDir = path.join(process.cwd(), 'temp-readme-test');
+  const readmePath = path.join(tempDir, 'README.md');
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.writeFileSync(readmePath, '# temp-readme-test\n\nA cool project that does amazing things.\n\n## Installation\n...');
+    
+    const preview = getReadmePreview(tempDir);
+    assert.strictEqual(preview, 'A cool project that does amazing things.');
+  } finally {
+    if (fs.existsSync(readmePath)) fs.unlinkSync(readmePath);
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
+});
+
+test('getReadmePreview - handles missing README', () => {
+  const tempDir = path.join(process.cwd(), 'temp-no-readme');
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    const preview = getReadmePreview(tempDir);
+    assert.strictEqual(preview, null);
+  } finally {
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
+});
+
+test('getReadmePreview - truncates long descriptions', () => {
+  const tempDir = path.join(process.cwd(), 'temp-long-readme');
+  const readmePath = path.join(tempDir, 'README.md');
+  const longText = 'A'.repeat(100);
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.writeFileSync(readmePath, `${longText}`);
+    
+    const preview = getReadmePreview(tempDir);
+    assert(preview.endsWith('...'));
+    assert(preview.length <= 80);
+  } finally {
+    if (fs.existsSync(readmePath)) fs.unlinkSync(readmePath);
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
 });

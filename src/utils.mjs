@@ -40,6 +40,45 @@ export const getExecuteCommand = (args, config) => {
   return commands[0] || 'code .';
 };
 
+// Get README preview for repository
+export const getReadmePreview = (repoPath) => {
+  const readmeFiles = ['README.md', 'readme.md', 'README.txt', 'readme.txt'];
+  
+  for (const filename of readmeFiles) {
+    const readmePath = path.join(repoPath, filename);
+    try {
+      if (fs.existsSync(readmePath)) {
+        const content = fs.readFileSync(readmePath, 'utf8');
+        const lines = content.split('\n')
+          .map(line => line.trim())
+          .filter(line => line.length > 0)
+          .filter(line => !line.startsWith('<!--'))  // Skip HTML comments
+          .filter(line => !line.startsWith('[!['))   // Skip badge lines
+          .filter(line => !line.startsWith('<'))     // Skip HTML tags
+          .filter(line => !line.match(/^#+\s*$/));   // Skip empty headers
+        
+        if (lines.length === 0) continue;
+        
+        // Get first meaningful line, remove markdown headers
+        let firstLine = lines[0].replace(/^#+\s*/, '').trim();
+        const repoName = path.basename(repoPath);
+        
+        // Skip if it's just the project name (same as repo name), try next line
+        if (firstLine.toLowerCase() === repoName.toLowerCase() && lines.length > 1) {
+          firstLine = lines[1].replace(/^#+\s*/, '').trim();
+        }
+        
+        if (!firstLine) continue;
+        
+        return firstLine.length > 80 ? firstLine.substring(0, 77) + '...' : firstLine;
+      }
+    } catch {
+      // Ignore errors and continue
+    }
+  }
+  return null;
+};
+
 // Validate config file structure
 export const validateConfig = (config) => {
   const errors = [];
