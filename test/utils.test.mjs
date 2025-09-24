@@ -162,3 +162,35 @@ test('getReadmePreview - strips markdown links', () => {
     if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
   }
 });
+test('getReadmePreview - strips non-alphanumeric characters', () => {
+  const tempDir = path.join(process.cwd(), 'temp-chars-readme');
+  const readmePath = path.join(tempDir, 'README.md');
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.writeFileSync(readmePath, 'A tool with @#$%^&*()+={}[]|\\:";\'<>?,/ special chars!');
+    
+    const preview = getReadmePreview(tempDir);
+    assert.strictEqual(preview, 'A tool with  special chars');
+  } finally {
+    if (fs.existsSync(readmePath)) fs.unlinkSync(readmePath);
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
+});
+
+test('getReadmePreview - respects custom maxLength', () => {
+  const tempDir = path.join(process.cwd(), 'temp-length-readme');
+  const readmePath = path.join(tempDir, 'README.md');
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.writeFileSync(readmePath, 'This is a very long description that should be truncated');
+    
+    const preview = getReadmePreview(tempDir, 20);
+    assert(preview.length <= 20);
+    assert(preview.endsWith('...'));
+  } finally {
+    if (fs.existsSync(readmePath)) fs.unlinkSync(readmePath);
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
+});

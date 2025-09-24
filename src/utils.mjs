@@ -41,7 +41,7 @@ export const getExecuteCommand = (args, config) => {
 };
 
 // Get README preview for repository
-export const getReadmePreview = (repoPath) => {
+export const getReadmePreview = (repoPath, maxLength = 80) => {
   const readmeFiles = ['README.md', 'readme.md', 'README.txt', 'readme.txt'];
   
   for (const filename of readmeFiles) {
@@ -73,7 +73,10 @@ export const getReadmePreview = (repoPath) => {
         // Strip markdown links: [text](url) -> text
         firstLine = firstLine.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
         
-        return firstLine.length > 80 ? firstLine.substring(0, 77) + '...' : firstLine;
+        // Strip non-alphanumeric chars except spaces, dots, hyphens
+        firstLine = firstLine.replace(/[^a-zA-Z0-9\s.-]/g, '');
+        
+        return firstLine.length > maxLength ? firstLine.substring(0, maxLength - 3) + '...' : firstLine;
       }
     } catch {
       // Ignore errors and continue

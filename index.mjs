@@ -55,6 +55,7 @@ if (process.argv.includes('--init')) {
     execute: 'code .',
     execute2: 'zsh',
     execute3: '[ -f .nvmrc ] && . ~/.nvm/nvm.sh && nvm use; code .',
+    previewLength: 80
   };
   try {
     fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
@@ -195,7 +196,7 @@ const main = async () => {
     if (process.argv.includes('--list')) {
       gitRepos.forEach((repo, index) => {
         const relativePath = path.relative(BASE_DIR, repo) || path.basename(repo);
-        const preview = getReadmePreview(repo);
+        const preview = getReadmePreview(repo, config.previewLength || 80);
         const display = preview ? `${relativePath} - ${preview}` : relativePath;
         console.log(`${index}: ${display}`);
       });
@@ -225,7 +226,7 @@ const main = async () => {
     // Interactive mode
     const choices = gitRepos.map((repo) => {
       const name = path.relative(BASE_DIR, repo) || path.basename(repo);
-      const preview = getReadmePreview(repo);
+      const preview = getReadmePreview(repo, config.previewLength || 80);
       return {
         name: preview ? `${name} - ${preview}` : name,
         value: repo,
