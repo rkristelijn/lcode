@@ -5,7 +5,7 @@
     "type": "git",
     "url": "git+https://github.com/rkristelijn/lcode.git"
   },
-  "version": "2.0.0",
+  "version": "2.1.0",
   "main": "index.mjs",
   "bin": {
     "lcode": "index.mjs"
