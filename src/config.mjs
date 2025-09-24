@@ -4,7 +4,7 @@ import inquirer from 'inquirer';
 
 export const CONFIG_TEMPLATES = {
   basic: {
-    name: 'Basic setup',
+    name: 'Basic setup - VS Code + terminal',
     config: {
       path: '~',
       maxDepth: 5,
@@ -14,7 +14,7 @@ export const CONFIG_TEMPLATES = {
     }
   },
   nvm: {
-    name: 'Node.js with NVM',
+    name: 'Node.js with NVM - auto-switch Node versions (.nvmrc)',
     config: {
       path: '~',
       maxDepth: 5,
@@ -24,7 +24,7 @@ export const CONFIG_TEMPLATES = {
     }
   },
   nix: {
-    name: 'Nix development environment',
+    name: 'Nix development environment - enter nix develop shell',
     config: {
       path: '~',
       maxDepth: 5,
@@ -34,7 +34,7 @@ export const CONFIG_TEMPLATES = {
     }
   },
   mixed: {
-    name: 'Mixed environments (auto-detect)',
+    name: 'Mixed environments - auto-detect (Nix first, then NVM, fallback to zsh)',
     config: {
       path: '~',
       maxDepth: 5,
@@ -44,7 +44,7 @@ export const CONFIG_TEMPLATES = {
     }
   },
   cursor: {
-    name: 'Cursor editor',
+    name: 'Cursor editor - AI-powered VS Code alternative',
     config: {
       path: '~',
       maxDepth: 5,
