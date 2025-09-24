@@ -70,6 +70,9 @@ export const getReadmePreview = (repoPath) => {
         
         if (!firstLine) continue;
         
+        // Strip markdown links: [text](url) -> text
+        firstLine = firstLine.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+        
         return firstLine.length > 80 ? firstLine.substring(0, 77) + '...' : firstLine;
       }
     } catch {
