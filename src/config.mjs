@@ -7,7 +7,7 @@ export const CONFIG_TEMPLATES = {
     name: 'Basic setup',
     config: {
       path: '~',
-      maxDepth: 3,
+      maxDepth: 5,
       execute: 'code .',
       execute2: 'zsh',
       execute3: 'bash'
@@ -17,7 +17,7 @@ export const CONFIG_TEMPLATES = {
     name: 'Node.js with NVM',
     config: {
       path: '~',
-      maxDepth: 3,
+      maxDepth: 5,
       execute: '[ -f .nvmrc ] && . ~/.nvm/nvm.sh && nvm use; code .',
       execute2: '. ~/.nvm/nvm.sh && nvm use && npm start',
       execute3: 'nvm use && yarn dev'
@@ -27,7 +27,7 @@ export const CONFIG_TEMPLATES = {
     name: 'Nix development environment',
     config: {
       path: '~',
-      maxDepth: 3,
+      maxDepth: 5,
       execute: 'nix develop -c code .',
       execute2: 'nix-shell --run "code ."',
       execute3: 'direnv allow && code .'
@@ -37,7 +37,7 @@ export const CONFIG_TEMPLATES = {
     name: 'Mixed environments (auto-detect)',
     config: {
       path: '~',
-      maxDepth: 3,
+      maxDepth: 5,
       execute: 'bash -c "if [ -f flake.nix ]; then nix develop; elif [ -f .nvmrc ]; then . ~/.nvm/nvm.sh && nvm use; fi; zsh"',
       execute2: 'code .',
       execute3: 'zsh'
@@ -47,7 +47,7 @@ export const CONFIG_TEMPLATES = {
     name: 'Cursor editor',
     config: {
       path: '~',
-      maxDepth: 3,
+      maxDepth: 5,
       execute: 'cursor .',
       execute2: 'zsh',
       execute3: 'bash'
@@ -106,7 +106,7 @@ export async function createInteractiveConfig() {
         type: 'input',
         name: 'maxDepth',
         message: 'Default search depth (1-10):',
-        default: '3',
+        default: '5',
         validate: (input) => {
           const num = parseInt(input, 10);
           if (isNaN(num) || num < 1 || num > 10) {
