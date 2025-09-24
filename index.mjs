@@ -8,6 +8,7 @@ import { execSync } from 'child_process';
 import ora from 'ora';
 import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig, getReadmePreview } from './src/utils.mjs';
 import { RepoCache } from './src/cache.mjs';
+import { createInteractiveConfig } from './src/config.mjs';
 
 // Register the autocomplete prompt
 inquirer.registerPrompt('autocomplete', inquirerAutocompletePrompt);
@@ -31,7 +32,7 @@ Arguments:
   command   Command to execute in selected repo (default: "code .")
 
 Options:
-  --init     Create configuration file
+  --init     Create configuration file (interactive)
   --cleanup  Remove configuration file
   --list     List all repositories (non-interactive)
   --select N Select repository by index (0-based)
@@ -49,23 +50,8 @@ Examples:
 
 // Check if the program is called with --init
 if (process.argv.includes('--init')) {
-  const defaultConfig = {
-    path: '~',
-    maxDepth: 5,
-    execute: 'code .',
-    execute2: 'zsh',
-    execute3: '[ -f .nvmrc ] && . ~/.nvm/nvm.sh && nvm use; code .',
-    previewLength: 80
-  };
-  try {
-    fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
-    console.log(`✓ Configuration file created at ${configPath}`);
-    console.log(JSON.stringify(defaultConfig, null, 2));
-  } catch (error) {
-    console.error(`✗ Failed to create config file: ${error.message}`);
-    process.exit(1);
-  }
-  process.exit(0);
+  const success = await createInteractiveConfig();
+  process.exit(success ? 0 : 1);
 }
 
 // Check if the program is called with --cleanup
@@ -100,6 +86,34 @@ if (fs.existsSync(configPath)) {
   } catch (error) {
     console.error(`✗ Invalid configuration file: ${error.message}`);
     process.exit(1);
+  }
+} else {
+  // No config exists - prompt user to create one (only in interactive mode)
+  const isNonInteractive = process.argv.includes('--list') || 
+                           process.argv.includes('--select') ||
+                           !process.stdin.isTTY;
+  
+  if (!isNonInteractive) {
+    console.log('🔧 No configuration found. Let\'s set one up!');
+    
+    const shouldCreate = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'create',
+        message: 'Would you like to create a configuration file?',
+        default: true
+      }
+    ]);
+    
+    if (shouldCreate.create) {
+      const success = await createInteractiveConfig();
+      if (success) {
+        // Reload the config
+        config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+      }
+    } else {
+      console.log('Continuing with default settings...');
+    }
   }
 }
 

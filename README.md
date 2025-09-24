@@ -6,6 +6,8 @@ A lightning-fast CLI tool to search your git repositories and open them in your 
 [![npm version](https://badge.fury.io/js/@rkristelijn%2Flcode.svg)](https://www.npmjs.com/package/@rkristelijn/lcode)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
+![lcode demo](docs/demo.gif)
+
 ## `(◕‿◕)` Features
 
 - `(⌐■_■)` **Lightning Fast**: Smart caching system with 5-minute TTL
@@ -45,6 +47,31 @@ lcode --select 0
 ```
 
 ## `(╯°□°）╯` Usage Guide
+
+### First Time Setup
+
+When you run lcode for the first time, it will automatically prompt you to create a configuration file:
+
+```bash
+lcode
+# 🔧 No configuration found. Let's set one up!
+# ? Would you like to create a configuration file? (Y/n)
+```
+
+You can also manually create a configuration:
+
+```bash
+lcode --init
+```
+
+This will show an interactive setup with these options:
+
+- **Basic setup** - Simple VS Code + terminal setup
+- **Node.js with NVM** - Automatic Node version switching
+- **Nix development environment** - Nix shell integration  
+- **Mixed environments** - Auto-detect Nix/NVM projects
+- **Cursor editor** - Alternative to VS Code
+- **Custom setup** - Define your own commands
 
 ### Interactive Mode (Default)
 
