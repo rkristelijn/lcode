@@ -27,7 +27,7 @@ Usage: lcode [path] [maxDepth] [command]
 
 Arguments:
   path      Starting directory to search (default: current directory)
-  maxDepth  Maximum search depth 1-10 (default: 3)
+  maxDepth  Maximum search depth 1-10 (default: 5)
   command   Command to execute in selected repo (default: "code .")
 
 Options:

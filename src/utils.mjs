@@ -26,7 +26,7 @@ export const isGitRepoAsync = async (folderPath) => {
 };
 
 // Validate and sanitize maxDepth
-export const validateMaxDepth = (depth, defaultDepth = 3) => {
+export const validateMaxDepth = (depth, defaultDepth = 5) => {
   const parsed = parseInt(depth, 10);
   if (isNaN(parsed)) return defaultDepth;
   return Math.max(1, Math.min(parsed, 10));
