@@ -48,11 +48,13 @@ Examples:
   process.exit(0);
 }
 
-// Check if the program is called with --init
-if (process.argv.includes('--init')) {
-  const success = await createInteractiveConfig();
-  process.exit(success ? 0 : 1);
-}
+// Main async function to handle top-level await
+(async () => {
+  // Check if the program is called with --init
+  if (process.argv.includes('--init')) {
+    const success = await createInteractiveConfig();
+    process.exit(success ? 0 : 1);
+  }
 
 // Check if the program is called with --cleanup
 if (process.argv.includes('--cleanup')) {
@@ -284,4 +286,5 @@ const main = async () => {
   }
 };
 
-main();
+await main();
+})();
