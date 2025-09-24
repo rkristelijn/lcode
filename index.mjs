@@ -6,7 +6,7 @@ import inquirer from 'inquirer';
 import inquirerAutocompletePrompt from 'inquirer-autocomplete-prompt';
 import { execSync } from 'child_process';
 import ora from 'ora';
-import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig } from './src/utils.mjs';
+import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig, getReadmePreview } from './src/utils.mjs';
 import { RepoCache } from './src/cache.mjs';
 
 // Register the autocomplete prompt
@@ -27,7 +27,7 @@ Usage: lcode [path] [maxDepth] [command]
 
 Arguments:
   path      Starting directory to search (default: current directory)
-  maxDepth  Maximum search depth 1-10 (default: 3)
+  maxDepth  Maximum search depth 1-10 (default: 5)
   command   Command to execute in selected repo (default: "code .")
 
 Options:
@@ -55,6 +55,7 @@ if (process.argv.includes('--init')) {
     execute: 'code .',
     execute2: 'zsh',
     execute3: '[ -f .nvmrc ] && . ~/.nvm/nvm.sh && nvm use; code .',
+    previewLength: 80
   };
   try {
     fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
@@ -195,7 +196,9 @@ const main = async () => {
     if (process.argv.includes('--list')) {
       gitRepos.forEach((repo, index) => {
         const relativePath = path.relative(BASE_DIR, repo) || path.basename(repo);
-        console.log(`${index}: ${relativePath}`);
+        const preview = getReadmePreview(repo, config.previewLength || 80);
+        const display = preview ? `${relativePath} - ${preview}` : relativePath;
+        console.log(`${index}: ${display}`);
       });
       return;
     }
@@ -221,10 +224,14 @@ const main = async () => {
     }
 
     // Interactive mode
-    const choices = gitRepos.map((repo) => ({
-      name: path.relative(BASE_DIR, repo) || path.basename(repo),
-      value: repo,
-    }));
+    const choices = gitRepos.map((repo) => {
+      const name = path.relative(BASE_DIR, repo) || path.basename(repo);
+      const preview = getReadmePreview(repo, config.previewLength || 80);
+      return {
+        name: preview ? `${name} - ${preview}` : name,
+        value: repo,
+      };
+    });
 
     const answer = await inquirer.prompt([
       {

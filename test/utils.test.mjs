@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert';
 import path from 'path';
 import fs from 'fs';
-import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig } from '../src/utils.mjs';
+import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig, getReadmePreview } from '../src/utils.mjs';
 
 test('expandHomeDir - expands ~ correctly', () => {
   const result = expandHomeDir('~/test');
@@ -24,7 +24,7 @@ test('validateMaxDepth - validates numeric input', () => {
   assert.strictEqual(validateMaxDepth('5'), 5);
   assert.strictEqual(validateMaxDepth('0'), 1); // minimum is 1
   assert.strictEqual(validateMaxDepth('15'), 10); // maximum is 10
-  assert.strictEqual(validateMaxDepth('invalid'), 3); // default
+  assert.strictEqual(validateMaxDepth('invalid'), 5); // default
   assert.strictEqual(validateMaxDepth(null, 7), 7); // custom default
 });
 
@@ -101,4 +101,96 @@ test('isGitRepo - returns false for non-git directory', () => {
   
   // Cleanup
   fs.rmSync(tempDir, { recursive: true });
+});
+test('getReadmePreview - extracts first meaningful line', () => {
+  const tempDir = path.join(process.cwd(), 'temp-readme-test');
+  const readmePath = path.join(tempDir, 'README.md');
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.writeFileSync(readmePath, '# temp-readme-test\n\nA cool project that does amazing things.\n\n## Installation\n...');
+    
+    const preview = getReadmePreview(tempDir);
+    assert.strictEqual(preview, 'A cool project that does amazing things.');
+  } finally {
+    if (fs.existsSync(readmePath)) fs.unlinkSync(readmePath);
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
+});
+
+test('getReadmePreview - handles missing README', () => {
+  const tempDir = path.join(process.cwd(), 'temp-no-readme');
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    const preview = getReadmePreview(tempDir);
+    assert.strictEqual(preview, null);
+  } finally {
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
+});
+
+test('getReadmePreview - truncates long descriptions', () => {
+  const tempDir = path.join(process.cwd(), 'temp-long-readme');
+  const readmePath = path.join(tempDir, 'README.md');
+  const longText = 'A'.repeat(100);
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.writeFileSync(readmePath, `${longText}`);
+    
+    const preview = getReadmePreview(tempDir);
+    assert(preview.endsWith('...'));
+    assert(preview.length <= 80);
+  } finally {
+    if (fs.existsSync(readmePath)) fs.unlinkSync(readmePath);
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
+});
+test('getReadmePreview - strips markdown links', () => {
+  const tempDir = path.join(process.cwd(), 'temp-link-readme');
+  const readmePath = path.join(tempDir, 'README.md');
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.writeFileSync(readmePath, 'A tool for the [TODO.md](https://github.com/todo-md/todo-md) standard');
+    
+    const preview = getReadmePreview(tempDir);
+    assert.strictEqual(preview, 'A tool for the TODO.md standard');
+  } finally {
+    if (fs.existsSync(readmePath)) fs.unlinkSync(readmePath);
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
+});
+test('getReadmePreview - strips non-alphanumeric characters', () => {
+  const tempDir = path.join(process.cwd(), 'temp-chars-readme');
+  const readmePath = path.join(tempDir, 'README.md');
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.writeFileSync(readmePath, 'A tool with @#$%^&*()+={}[]|\\:";\'<>?,/ special chars!');
+    
+    const preview = getReadmePreview(tempDir);
+    assert.strictEqual(preview, 'A tool with  special chars');
+  } finally {
+    if (fs.existsSync(readmePath)) fs.unlinkSync(readmePath);
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
+});
+
+test('getReadmePreview - respects custom maxLength', () => {
+  const tempDir = path.join(process.cwd(), 'temp-length-readme');
+  const readmePath = path.join(tempDir, 'README.md');
+  
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.writeFileSync(readmePath, 'This is a very long description that should be truncated');
+    
+    const preview = getReadmePreview(tempDir, 20);
+    assert(preview.length <= 20);
+    assert(preview.endsWith('...'));
+  } finally {
+    if (fs.existsSync(readmePath)) fs.unlinkSync(readmePath);
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
+  }
 });
