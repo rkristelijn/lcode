@@ -56,6 +56,24 @@ export const CONFIG_TEMPLATES = {
 };
 
 export async function createInteractiveConfig() {
+  // Detect CI environment and use basic setup
+  const isCI = process.env.CI || process.env.GITHUB_ACTIONS || process.env.JENKINS_URL;
+  
+  if (isCI) {
+    console.log('🤖 CI environment detected - using basic configuration');
+    const basicConfig = CONFIG_TEMPLATES.basic.config;
+    const configPath = path.resolve(process.env.HOME, '.lcodeconfig');
+    
+    try {
+      fs.writeFileSync(configPath, JSON.stringify(basicConfig, null, 2));
+      console.log(`✓ Configuration file created at ${configPath}`);
+      return true;
+    } catch (error) {
+      console.error(`✗ Failed to create configuration file: ${error.message}`);
+      return false;
+    }
+  }
+
   console.log('\n🚀 Welcome to lcode configuration setup!\n');
 
   const answers = await inquirer.prompt([
