@@ -38,6 +38,15 @@
       "Use logical section ordering",
       "Include practical examples",
       "Maintain professional yet friendly tone"
+    ],
+    "git_workflow": [
+      "Always create GitHub issues first for features/bugs",
+      "Use GitHub CLI (gh) for all Git interactions",
+      "Create feature branches and pull requests",
+      "Wait for CI/CD pipeline to succeed before merging",
+      "Bump version in package.json before publishing",
+      "Use 'npm publish' only after successful merge to main",
+      "Never push directly to main - always use PR workflow"
     ]
   }
 }
