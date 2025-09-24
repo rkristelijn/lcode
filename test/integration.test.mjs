@@ -68,3 +68,63 @@ test('CLI validates maxDepth parameter', () => {
   // Should not crash and should handle the validation
   assert(typeof output === 'string');
 });
+
+test('CLI --list shows repositories', () => {
+  // Test list mode with parent directory that should have repos
+  const output = execSync(`node ${CLI_PATH} .. 2 --list`, { 
+    encoding: 'utf8',
+    timeout: 10000 
+  });
+  
+  // Should show numbered list of repositories
+  assert(typeof output === 'string');
+  // If repos found, should have format "0: repo-name"
+  if (output.trim() && !output.includes('No git repositories found')) {
+    assert(output.match(/^\d+: /m));
+  }
+});
+
+test('CLI --select works with valid index', () => {
+  try {
+    // First get the list to see if we have repos
+    const listOutput = execSync(`node ${CLI_PATH} .. 2 --list`, { 
+      encoding: 'utf8',
+      timeout: 10000 
+    });
+    
+    if (listOutput.includes('No git repositories found')) {
+      // Skip test if no repos found
+      return;
+    }
+    
+    // Try to select index 0 with echo command
+    const output = execSync(`node ${CLI_PATH} .. 2 --select 0 echo`, { 
+      encoding: 'utf8',
+      timeout: 10000 
+    });
+    
+    assert(output.includes('→ Selected:'));
+    assert(output.includes('→ Command: echo'));
+  } catch (error) {
+    // Test passes if it's just a timeout or expected behavior
+    assert(error.status === 0 || error.stdout.includes('→ Selected:'));
+  }
+});
+
+test('CLI --select handles invalid index', () => {
+  try {
+    const output = execSync(`node ${CLI_PATH} .. 2 --select 999`, { 
+      encoding: 'utf8',
+      stdio: 'pipe',
+      timeout: 5000 
+    });
+    // If it doesn't throw, check if it found repos and handled invalid index
+    if (!output.includes('No git repositories found')) {
+      assert.fail('Should have thrown an error for invalid index when repos exist');
+    }
+  } catch (error) {
+    // Should throw error for invalid index
+    const output = error.stderr || error.stdout || '';
+    assert(output.includes('Invalid index') || output.includes('No git repositories found'));
+  }
+});

@@ -33,13 +33,16 @@ Arguments:
 Options:
   --init     Create configuration file
   --cleanup  Remove configuration file
+  --list     List all repositories (non-interactive)
+  --select N Select repository by index (0-based)
   --help     Show this help
 
 Examples:
-  lcode                                    # Search current directory
-  lcode ~ 5                               # Search home directory, depth 5
-  lcode ~/projects 3 "code ."             # Custom path and command
-  lcode ~ 5 ". ~/.nvm/nvm.sh && nvm use && code ."  # With NVM setup
+  lcode                                    # Interactive mode
+  lcode --list                            # List all repos
+  lcode --select 0                        # Select first repo
+  lcode ~ 5 --list                        # List repos from ~ with depth 5
+  lcode ~ 5 --select 2 "code ."           # Select 3rd repo and open in VS Code
   `);
   process.exit(0);
 }
@@ -99,9 +102,21 @@ if (fs.existsSync(configPath)) {
   }
 }
 
-const BASE_DIR = path.resolve(process.argv[2] || expandHomeDir(config.path) || '.');
-const MAX_DEPTH = validateMaxDepth(process.argv[3], config.maxDepth);
-const EXECUTE = getExecuteCommand(process.argv, config);
+// Parse arguments properly
+const selectIndex = process.argv.findIndex(arg => arg === '--select');
+const selectValue = selectIndex !== -1 ? process.argv[selectIndex + 1] : null;
+
+// Filter out --select and its value for normal arg parsing
+const filteredArgs = process.argv.slice(2).filter((arg, index, arr) => {
+  if (arg === '--select') return false;
+  if (index > 0 && arr[index - 1] === '--select') return false;
+  if (arg === '--list') return false;
+  return true;
+});
+
+const BASE_DIR = path.resolve(filteredArgs[0] || expandHomeDir(config.path) || '.');
+const MAX_DEPTH = validateMaxDepth(filteredArgs[1], config.maxDepth);
+const EXECUTE = filteredArgs[2] || getExecuteCommand(process.argv, config);
 
 // Recursively scan for directories containing a .git folder
 const getGitRepos = (baseDir, maxDepth) => {
@@ -176,6 +191,36 @@ const main = async () => {
       return;
     }
 
+    // Non-interactive modes
+    if (process.argv.includes('--list')) {
+      gitRepos.forEach((repo, index) => {
+        const relativePath = path.relative(BASE_DIR, repo) || path.basename(repo);
+        console.log(`${index}: ${relativePath}`);
+      });
+      return;
+    }
+
+    if (selectValue) {
+      const index = parseInt(selectValue, 10);
+      if (isNaN(index) || index < 0 || index >= gitRepos.length) {
+        console.error(`✗ Invalid index ${index}. Available: 0-${gitRepos.length - 1}`);
+        process.exit(1);
+      }
+      
+      const selectedRepo = gitRepos[index];
+      const relativePath = path.relative(BASE_DIR, selectedRepo) || path.basename(selectedRepo);
+      
+      console.log(`→ Selected: ${relativePath}`);
+      console.log(`→ Command: ${EXECUTE}\n`);
+
+      execSync(`cd "${selectedRepo}" && ${EXECUTE}`, { 
+        stdio: 'inherit', 
+        shell: '/bin/bash' 
+      });
+      return;
+    }
+
+    // Interactive mode
     const choices = gitRepos.map((repo) => ({
       name: path.relative(BASE_DIR, repo) || path.basename(repo),
       value: repo,
