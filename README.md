@@ -112,6 +112,16 @@ This creates `~/.lcodeconfig` with these defaults:
 }
 ```
 
+**Advanced users** might prefer this intelligent pattern that auto-detects environments:
+
+```json
+{
+  "path": "~",
+  "maxDepth": 5,
+  "execute": "bash -c 'if [ -f flake.nix ]; then nix develop; elif [ -f .nvmrc ]; then . ~/.nvm/nvm.sh && nvm use; fi; zsh'"
+}
+```
+
 ### Configuration Options
 
 | Option | Description | Example |
@@ -177,8 +187,22 @@ For Nix-based development environments:
 
 ### Mixed Environments
 
-For teams using different tools:
+For teams using different tools, here's an advanced pattern that automatically detects and uses the right environment:
 
+```json
+{
+  "path": "~",
+  "maxDepth": 5,
+  "execute": "bash -c 'if [ -f flake.nix ]; then nix develop; elif [ -f .nvmrc ]; then . ~/.nvm/nvm.sh && nvm use; fi; zsh'"
+}
+```
+
+This intelligent command:
+1. **Checks for `flake.nix`** → enters Nix development shell
+2. **Falls back to `.nvmrc`** → loads correct Node.js version with NVM  
+3. **Defaults to `zsh`** → opens terminal in project directory
+
+**Other mixed environment patterns:**
 ```json
 {
   "execute": "code .",
