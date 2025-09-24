@@ -4,50 +4,50 @@ import inquirer from 'inquirer';
 
 export const CONFIG_TEMPLATES = {
   basic: {
-    name: 'Basic setup',
+    name: 'Basic setup - VS Code + terminal',
     config: {
       path: '~',
-      maxDepth: 3,
+      maxDepth: 5,
       execute: 'code .',
       execute2: 'zsh',
       execute3: 'bash'
     }
   },
   nvm: {
-    name: 'Node.js with NVM',
+    name: 'Node.js with NVM - auto-switch Node versions (.nvmrc)',
     config: {
       path: '~',
-      maxDepth: 3,
+      maxDepth: 5,
       execute: '[ -f .nvmrc ] && . ~/.nvm/nvm.sh && nvm use; code .',
       execute2: '. ~/.nvm/nvm.sh && nvm use && npm start',
       execute3: 'nvm use && yarn dev'
     }
   },
   nix: {
-    name: 'Nix development environment',
+    name: 'Nix development environment - enter nix develop shell',
     config: {
       path: '~',
-      maxDepth: 3,
+      maxDepth: 5,
       execute: 'nix develop -c code .',
       execute2: 'nix-shell --run "code ."',
       execute3: 'direnv allow && code .'
     }
   },
   mixed: {
-    name: 'Mixed environments (auto-detect)',
+    name: 'Mixed environments - auto-detect (Nix first, then NVM, fallback to zsh)',
     config: {
       path: '~',
-      maxDepth: 3,
+      maxDepth: 5,
       execute: 'bash -c "if [ -f flake.nix ]; then nix develop; elif [ -f .nvmrc ]; then . ~/.nvm/nvm.sh && nvm use; fi; zsh"',
       execute2: 'code .',
       execute3: 'zsh'
     }
   },
   cursor: {
-    name: 'Cursor editor',
+    name: 'Cursor editor - AI-powered VS Code alternative',
     config: {
       path: '~',
-      maxDepth: 3,
+      maxDepth: 5,
       execute: 'cursor .',
       execute2: 'zsh',
       execute3: 'bash'
@@ -106,7 +106,7 @@ export async function createInteractiveConfig() {
         type: 'input',
         name: 'maxDepth',
         message: 'Default search depth (1-10):',
-        default: '3',
+        default: '5',
         validate: (input) => {
           const num = parseInt(input, 10);
           if (isNaN(num) || num < 1 || num > 10) {
