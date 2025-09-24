@@ -6,17 +6,17 @@ A lightning-fast CLI tool to search your git repositories and open them in your 
 [![npm version](https://badge.fury.io/js/@rkristelijn%2Flcode.svg)](https://www.npmjs.com/package/@rkristelijn/lcode)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
-## ✨ Features
+## `(◕‿◕)` Features
 
-- 🚀 **Lightning Fast**: Smart caching system with 5-minute TTL
-- 🎯 **Interactive Mode**: Fuzzy search with autocomplete
-- 🤖 **Automation Ready**: Non-interactive CLI for Amazon Q, CI/CD
-- ⚙️ **Highly Configurable**: Custom paths, commands, and depth settings
-- 🔧 **Node Version Management**: Built-in NVM and Nix support
-- 📊 **Progress Indicators**: Visual feedback during repository scanning
-- 🧪 **Production Ready**: 100% test coverage, comprehensive error handling
+- `(⌐■_■)` **Lightning Fast**: Smart caching system with 5-minute TTL
+- `(╯°□°）╯` **Interactive Mode**: Fuzzy search with autocomplete
+- `ヽ(°〇°)ﾉ` **Automation Ready**: Non-interactive CLI for Amazon Q, CI/CD
+- `(¬‿¬)` **Highly Configurable**: Custom paths, commands, and depth settings
+- `(╯°□°）╯` **Node Version Management**: Built-in NVM and Nix support
+- `(◉◡◉)` **Progress Indicators**: Visual feedback during repository scanning
+- `ヽ(´▽`)/` **Production Ready**: 100% test coverage, comprehensive error handling
 
-## 🚀 Quick Start
+## `(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧` Quick Start
 
 ### Installation
 
@@ -44,7 +44,7 @@ lcode --list
 lcode --select 0
 ```
 
-## 📖 Usage Guide
+## `(╯°□°）╯` Usage Guide
 
 ### Interactive Mode (Default)
 
@@ -92,7 +92,7 @@ lcode [path] [maxDepth] [command] [options]
 - `--select N` - Select repository by index
 - `--help` - Show help information
 
-## ⚙️ Configuration
+## `(¬‿¬)` Configuration
 
 ### Create Configuration File
 
@@ -132,7 +132,7 @@ This creates `~/.lcodeconfig` with these defaults:
 | `execute2` | Alternative command | `"zsh"` |
 | `execute3` | Advanced command with NVM | `"nvm use && code ."` |
 
-## 🔧 Node Version Management
+## `ヽ(°〇°)ﾉ` Node Version Management
 
 ### NVM (Node Version Manager)
 
@@ -211,7 +211,7 @@ This intelligent command:
 }
 ```
 
-## 🎯 Real-World Examples
+## `(╯°□°）╯` Real-World Examples
 
 ### Development Workflows
 
@@ -249,14 +249,14 @@ lcode --select <index> zsh          # Open in terminal
     done
 ```
 
-## 🚀 Performance Tips
+## `(⌐■_■)` Performance Tips
 
 - **Caching**: Subsequent searches in the same directory are instant (5-minute cache)
 - **Depth Optimization**: Use lower `maxDepth` for faster scans in large directories
 - **Ignore Patterns**: Automatically ignores `node_modules`, `build`, `dist`, `.git`, etc.
 - **Smart Scanning**: Progress indicators show real-time scanning status
 
-## 🧪 Development
+## `ヽ(´▽`)/` Development
 
 ### Prerequisites
 
@@ -283,35 +283,35 @@ npm run lint          # Code linting
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
-## 📊 Comparison
+## `(◉◡◉)` Comparison
 
 | Feature | lcode | Other Tools |
 |---------|-------|-------------|
-| **Speed** | ⚡ Cached + Fast | 🐌 Slow scans |
-| **Automation** | 🤖 CLI + Interactive | 🚫 Interactive only |
-| **Node Management** | ✅ NVM + Nix built-in | ❌ Manual setup |
-| **Testing** | ✅ 100% coverage | ❓ Varies |
-| **AI Integration** | ✅ Amazon Q ready | ❌ Not supported |
+| **Speed** | `(⌐■_■)` Cached + Fast | `(´･ω･`)` Slow scans |
+| **Automation** | `ヽ(°〇°)ﾉ` CLI + Interactive | `(╯°□°）╯` Interactive only |
+| **Node Management** | `(◕‿◕)` NVM + Nix built-in | `(¬_¬)` Manual setup |
+| **Testing** | `ヽ(´▽`)/` 100% coverage | `(・_・?)` Varies |
+| **AI Integration** | `(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧` Amazon Q ready | `(╯°□°）╯` Not supported |
 
-## 🔗 Links
+## `(¬‿¬)` Links
 
 - [npm Package](https://www.npmjs.com/package/@rkristelijn/lcode)
 - [GitHub Repository](https://github.com/rkristelijn/lcode)
 - [Issues & Feature Requests](https://github.com/rkristelijn/lcode/issues)
 - [Contributing Guide](CONTRIBUTING.md)
 
-## 📄 License
+## `(◕‿◕)` License
 
 ISC License - see [LICENSE](LICENSE) file for details.
 
-## 💖 Support
+## `ヽ(´▽`)/` Support
 
 If lcode saves you time, consider:
-- ⭐ [Starring the repository](https://github.com/rkristelijn/lcode)
-- 🐛 [Reporting issues](https://github.com/rkristelijn/lcode/issues)
-- 💡 [Suggesting features](https://github.com/rkristelijn/lcode/issues/new)
-- 💰 [Sponsoring development](https://github.com/sponsors/rkristelijn)
+- `(◕‿◕)` [Starring the repository](https://github.com/rkristelijn/lcode)
+- `(╯°□°）╯` [Reporting issues](https://github.com/rkristelijn/lcode/issues)
+- `(¬‿¬)` [Suggesting features](https://github.com/rkristelijn/lcode/issues/new)
+- `ヽ(°〇°)ﾉ` [Sponsoring development](https://github.com/sponsors/rkristelijn)
 
 ---
 
-**Made with ❤️ by developers, for developers.**
+**Made with `ヽ(´▽`)/` by developers, for developers.**
