@@ -76,21 +76,21 @@ test('validateConfig - catches invalid execute commands', () => {
   assert(errors.includes('execute2 must be a string'));
 });
 
-test('isGitRepo - detects git repository', async (t) => {
+test('isGitRepo - detects git repository', () => {
   // Create a temporary directory with .git folder
   const tempDir = path.join(process.cwd(), 'temp-test-repo');
   const gitDir = path.join(tempDir, '.git');
   
-  t.after(() => {
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.mkdirSync(gitDir);
+    
+    assert.strictEqual(isGitRepo(tempDir), true);
+  } finally {
     // Cleanup
     if (fs.existsSync(gitDir)) fs.rmSync(gitDir, { recursive: true });
     if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true });
-  });
-  
-  fs.mkdirSync(tempDir, { recursive: true });
-  fs.mkdirSync(gitDir);
-  
-  assert.strictEqual(isGitRepo(tempDir), true);
+  }
 });
 
 test('isGitRepo - returns false for non-git directory', () => {

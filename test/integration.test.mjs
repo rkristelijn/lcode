@@ -14,25 +14,25 @@ test('CLI --help shows usage information', () => {
   assert(output.includes('--cleanup'));
 });
 
-test('CLI --init creates config file', async (t) => {
+test('CLI --init creates config file', () => {
   const configPath = path.join(process.env.HOME, '.lcodeconfig');
   
-  t.after(() => {
+  try {
+    // Remove existing config if any
     if (fs.existsSync(configPath)) fs.unlinkSync(configPath);
-  });
-  
-  // Remove existing config if any
-  if (fs.existsSync(configPath)) fs.unlinkSync(configPath);
-  
-  const output = execSync(`node ${CLI_PATH} --init`, { encoding: 'utf8' });
-  
-  assert(output.includes('✓ Configuration file created'));
-  assert(fs.existsSync(configPath));
-  
-  const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-  assert.strictEqual(config.path, '~');
-  assert.strictEqual(config.maxDepth, 5);
-  assert.strictEqual(config.execute, 'code .');
+    
+    const output = execSync(`node ${CLI_PATH} --init`, { encoding: 'utf8' });
+    
+    assert(output.includes('✓ Configuration file created'));
+    assert(fs.existsSync(configPath));
+    
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    assert.strictEqual(config.path, '~');
+    assert.strictEqual(config.maxDepth, 5);
+    assert.strictEqual(config.execute, 'code .');
+  } finally {
+    if (fs.existsSync(configPath)) fs.unlinkSync(configPath);
+  }
 });
 
 test('CLI --cleanup removes config file', async (_t) => {

@@ -4,49 +4,49 @@ import fs from 'fs';
 import path from 'path';
 import { RepoCache } from '../src/cache.mjs';
 
-test('RepoCache - stores and retrieves data', async (t) => {
+test('RepoCache - stores and retrieves data', () => {
   const cacheFile = path.join(process.cwd(), 'test-cache.json');
   const cache = new RepoCache(cacheFile);
   
-  t.after(() => {
+  try {
+    const baseDir = '/test/dir';
+    const maxDepth = 3;
+    const repos = ['/test/dir/repo1', '/test/dir/repo2'];
+    
+    // Initially should return null
+    assert.strictEqual(cache.get(baseDir, maxDepth), null);
+    
+    // Set cache
+    cache.set(baseDir, maxDepth, repos);
+    
+    // Should retrieve cached data
+    const cached = cache.get(baseDir, maxDepth);
+    assert.deepStrictEqual(cached, repos);
+  } finally {
     if (fs.existsSync(cacheFile)) fs.unlinkSync(cacheFile);
-  });
-  
-  const baseDir = '/test/dir';
-  const maxDepth = 3;
-  const repos = ['/test/dir/repo1', '/test/dir/repo2'];
-  
-  // Initially should return null
-  assert.strictEqual(cache.get(baseDir, maxDepth), null);
-  
-  // Set cache
-  cache.set(baseDir, maxDepth, repos);
-  
-  // Should retrieve cached data
-  const cached = cache.get(baseDir, maxDepth);
-  assert.deepStrictEqual(cached, repos);
+  }
 });
 
-test('RepoCache - expires after TTL', async (t) => {
+test('RepoCache - expires after TTL', () => {
   const cacheFile = path.join(process.cwd(), 'test-cache-ttl.json');
   const cache = new RepoCache(cacheFile);
   
-  t.after(() => {
+  try {
+    // Manually create expired cache
+    const expiredCache = {
+      baseDir: '/test/dir',
+      maxDepth: 3,
+      repos: ['/test/repo'],
+      timestamp: Date.now() - (6 * 60 * 1000) // 6 minutes ago
+    };
+    
+    fs.writeFileSync(cacheFile, JSON.stringify(expiredCache));
+    
+    // Should return null for expired cache
+    assert.strictEqual(cache.get('/test/dir', 3), null);
+  } finally {
     if (fs.existsSync(cacheFile)) fs.unlinkSync(cacheFile);
-  });
-  
-  // Manually create expired cache
-  const expiredCache = {
-    baseDir: '/test/dir',
-    maxDepth: 3,
-    repos: ['/test/repo'],
-    timestamp: Date.now() - (6 * 60 * 1000) // 6 minutes ago
-  };
-  
-  fs.writeFileSync(cacheFile, JSON.stringify(expiredCache));
-  
-  // Should return null for expired cache
-  assert.strictEqual(cache.get('/test/dir', 3), null);
+  }
 });
 
 test('RepoCache - clears cache file', async (_t) => {
