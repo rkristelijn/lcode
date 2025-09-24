@@ -1,0 +1,43 @@
+{
+  "preferences": {
+    "emoticons": {
+      "type": "kaomoji",
+      "style": "backtick-emphasized",
+      "examples": [
+        "`(◕‿◕)`",
+        "`(⌐■_■)`",
+        "`(╯°□°）╯`",
+        "`ヽ(°〇°)ﾉ`",
+        "`(¬‿¬)`",
+        "`(◉◡◉)`",
+        "`ヽ(´▽`)/`",
+        "`(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧`"
+      ]
+    },
+    "documentation": {
+      "tone": "friendly-professional",
+      "style": "developer-focused",
+      "emphasis": "backticks-for-kaomoji",
+      "structure": "logical-hierarchy"
+    },
+    "code": {
+      "style": "minimal-clean",
+      "comments": "concise-helpful",
+      "naming": "descriptive-clear"
+    }
+  },
+  "guidelines": {
+    "kaomoji_usage": [
+      "Use backticks around kaomojis for emphasis: `(◕‿◕)`",
+      "Match kaomoji emotion to content context",
+      "Prefer kaomojis over standard emojis",
+      "Use sparingly for maximum impact"
+    ],
+    "documentation": [
+      "Start with clear value proposition",
+      "Use logical section ordering",
+      "Include practical examples",
+      "Maintain professional yet friendly tone"
+    ]
+  }
+}
