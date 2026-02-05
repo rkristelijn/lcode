@@ -13,6 +13,18 @@ A lightning-fast CLI tool to search your git repositories and open them in your 
 
 ![lcode demo](docs/demo.gif)
 
+## ⚡ Performance
+
+**330x faster** than grep for repository discovery. Language filtering adds **zero overhead**.
+
+| Method | Time | Features |
+|--------|------|----------|
+| `grep -r` | 101s | Content search only |
+| `find` | 0.024s | Basic listing |
+| **lcode** | **0.31s** | Language detection + README + Caching + Filtering |
+
+[📊 Full Benchmark Report](docs/benchmark.md) • Memory: ~86 MB • Cold start: 0.27s • Cached: 0.31s
+
 ## `(◕‿◕)` Features
 
 - `(⌐■_■)` **Lightning Fast**: Smart caching system with 5-minute TTL
