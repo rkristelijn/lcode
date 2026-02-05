@@ -6,7 +6,7 @@ import inquirer from 'inquirer';
 import inquirerAutocompletePrompt from 'inquirer-autocomplete-prompt';
 import { execSync } from 'child_process';
 import ora from 'ora';
-import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig, getReadmePreview, detectLanguage, detectLanguages } from './src/utils.mjs';
+import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig, getReadmePreview, detectLanguages } from './src/utils.mjs';
 import { RepoCache } from './src/cache.mjs';
 import { createInteractiveConfig } from './src/config.mjs';
 
