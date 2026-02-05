@@ -85,6 +85,63 @@ export const getReadmePreview = (repoPath, maxLength = 80) => {
   return null;
 };
 
+// Detect all languages in a repository
+export const detectLanguages = (repoPath) => {
+  const languages = new Set();
+  
+  const indicators = {
+    'tsconfig.json': 'ts',
+    'package.json': 'js',
+    'nx.json': 'nx',
+    'pom.xml': 'java',
+    'build.gradle': 'java',
+    'build.gradle.kts': 'kotlin',
+    'settings.gradle.kts': 'kotlin',
+    'requirements.txt': 'python',
+    'setup.py': 'python',
+    'Pipfile': 'python',
+    'Cargo.toml': 'rust',
+    'go.mod': 'go',
+    'Gemfile': 'ruby',
+    'composer.json': 'php',
+    '.csproj': 'csharp',
+    'Makefile': 'c',
+    'CMakeLists.txt': 'cpp',
+  };
+
+  for (const [file, lang] of Object.entries(indicators)) {
+    if (file.startsWith('.')) {
+      // For extensions like .csproj, check if any file ends with it
+      try {
+        const files = fs.readdirSync(repoPath);
+        if (files.some(f => f.endsWith(file))) {
+          languages.add(lang);
+        }
+      } catch {
+        // Ignore errors
+      }
+    } else if (fs.existsSync(path.join(repoPath, file))) {
+      languages.add(lang);
+    }
+  }
+  
+  return languages.size > 0 ? Array.from(languages) : ['other'];
+};
+
+// Detect primary language of repository (for backward compatibility)
+export const detectLanguage = (repoPath) => {
+  const languages = detectLanguages(repoPath);
+  
+  // Priority order for primary language
+  const priority = ['ts', 'js', 'kotlin', 'java', 'python', 'go', 'rust', 'ruby', 'php', 'csharp', 'cpp', 'c', 'nx'];
+  
+  for (const lang of priority) {
+    if (languages.includes(lang)) return lang;
+  }
+  
+  return languages[0] || 'other';
+};
+
 // Validate config file structure
 export const validateConfig = (config) => {
   const errors = [];

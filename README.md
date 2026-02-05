@@ -1,10 +1,15 @@
 # lcode
 
-A lightning-fast CLI tool to search your git repositories and open them in your favorite editor or command.
-
+[![npm](https://img.shields.io/npm/dm/@rkristelijn/lcode)](https://www.npmjs.com/package/@rkristelijn/lcode)
+[![version](https://img.shields.io/npm/v/@rkristelijn/lcode?label=package)](https://www.npmjs.com/package/@rkristelijn/lcode)
+![license](https://img.shields.io/npm/l/@rkristelijn/lcode)
+![npm total downloads](https://img.shields.io/npm/dt/@rkristelijn/lcode)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+![GitHub stars](https://img.shields.io/github/stars/rkristelijn/lcode)
+![Last Commit](https://img.shields.io/github/last-commit/rkristelijn/lcode)
 [![CI](https://github.com/rkristelijn/lcode/actions/workflows/ci.yml/badge.svg)](https://github.com/rkristelijn/lcode/actions/workflows/ci.yml)
-[![npm version](https://badge.fury.io/js/@rkristelijn%2Flcode.svg)](https://www.npmjs.com/package/@rkristelijn/lcode)
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+
+A lightning-fast CLI tool to search your git repositories and open them in your favorite editor or command.
 
 ![lcode demo](docs/demo.gif)
 
@@ -12,6 +17,8 @@ A lightning-fast CLI tool to search your git repositories and open them in your 
 
 - `(⌐■_■)` **Lightning Fast**: Smart caching system with 5-minute TTL
 - `(╯°□°）╯` **Interactive Mode**: Fuzzy search with autocomplete
+- `🔍` **Language Detection**: Automatically detects TypeScript, JavaScript, Python, Java, Kotlin, Go, Rust, and more
+- `🎯` **Smart Filtering**: Filter repositories by single or multiple languages
 - `ヽ(°〇°)ﾉ` **Automation Ready**: Non-interactive CLI for Amazon Q, CI/CD
 - `(¬‿¬)` **Highly Configurable**: Custom paths, commands, and depth settings
 - `(╯°□°）╯` **Node Version Management**: Built-in NVM and Nix support
@@ -117,7 +124,49 @@ lcode [path] [maxDepth] [command] [options]
 - `--cleanup` - Remove configuration file
 - `--list` - List repositories (non-interactive)
 - `--select N` - Select repository by index
+- `--lang L` - Filter by language(s) (comma-separated)
 - `--help` - Show help information
+
+### Language Filtering
+
+lcode automatically detects the primary language(s) in each repository and displays them:
+
+```bash
+# List all repositories with language tags
+lcode --list
+# Output:
+# 0: my-api [ts,js] - REST API service
+# 1: data-processor [python] - Data processing pipeline
+# 2: mobile-app [kotlin,java] - Android application
+# 3: cli-tool [go] - Command line utility
+
+# Filter by single language
+lcode --list --lang ts          # Show only TypeScript projects
+lcode --list --lang python      # Show only Python projects
+
+# Filter by multiple languages (OR logic)
+lcode --list --lang ts,js       # Show TypeScript OR JavaScript projects
+lcode --list --lang java,kotlin # Show Java OR Kotlin projects
+
+# Use with select
+lcode --lang python --select 0  # Open first Python project
+```
+
+**Supported Languages:**
+- `ts` - TypeScript (tsconfig.json)
+- `js` - JavaScript (package.json)
+- `nx` - Nx monorepo (nx.json)
+- `python` - Python (requirements.txt, setup.py, Pipfile)
+- `java` - Java (pom.xml, build.gradle)
+- `kotlin` - Kotlin (build.gradle.kts, settings.gradle.kts)
+- `go` - Go (go.mod)
+- `rust` - Rust (Cargo.toml)
+- `ruby` - Ruby (Gemfile)
+- `php` - PHP (composer.json)
+- `csharp` - C# (*.csproj)
+- `c` - C (Makefile)
+- `cpp` - C++ (CMakeLists.txt)
+- `other` - No specific language detected
 
 ## `(¬‿¬)` Configuration
 
@@ -247,8 +296,19 @@ This intelligent command:
 lcode --list | grep -i "api"        # Find API projects
 lcode --select 2                    # Open the third API project
 
+# Filter by language
+lcode --list --lang ts              # List all TypeScript projects
+lcode --list --lang python,go       # List Python or Go projects
+lcode --lang java --select 0        # Open first Java project
+
 # Batch operations
 for i in {0..5}; do lcode --select $i "git pull"; done
+
+# Language-specific operations
+lcode --lang ts --list | while read line; do
+  index=$(echo $line | cut -d: -f1)
+  lcode --select $index "npm audit fix"
+done
 ```
 
 ### Amazon Q Integration
@@ -259,6 +319,12 @@ lcode --select 1 "code ."
 
 # "List all my projects"  
 lcode --list
+
+# "Show me all TypeScript projects"
+lcode --list --lang ts
+
+# "Open the first Python project"
+lcode --lang python --select 0
 
 # "Open the project called 'api' in terminal"
 lcode --list | grep -n api          # Find index
@@ -315,6 +381,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 | Feature | lcode | Other Tools |
 |---------|-------|-------------|
 | **Speed** | `(⌐■_■)` Cached + Fast | `(´･ω･`)` Slow scans |
+| **Language Detection** | `🔍` Auto-detect 13+ languages | `(╯°□°）╯` Manual tagging |
+| **Language Filtering** | `🎯` Multi-language support | `(¬_¬)` Limited or none |
 | **Automation** | `ヽ(°〇°)ﾉ` CLI + Interactive | `(╯°□°）╯` Interactive only |
 | **Node Management** | `(◕‿◕)` NVM + Nix built-in | `(¬_¬)` Manual setup |
 | **Testing** | `ヽ(´▽`)/` 100% coverage | `(・_・?)` Varies |
