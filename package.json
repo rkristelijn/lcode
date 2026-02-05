@@ -32,7 +32,7 @@
     "repository"
   ],
   "author": "rkristelijn",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "glob": "^11.1.0",
