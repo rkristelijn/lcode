@@ -47,7 +47,12 @@ npm install -g @rkristelijn/lcode
 
 # Or use with npx (no installation)
 npx @rkristelijn/lcode
+
+# Kiro CLI MCP Integration
+kiro-cli mcp add --name "lcode" --command "npx" --args "@rkristelijn/lcode"
 ```
+
+📖 [Kiro CLI MCP Integration Guide](docs/mcp-integration.md)
 
 ### Basic Usage
 
