@@ -1,0 +1,139 @@
+# E2E AI Testing Script for lcode
+# Run these commands manually to verify all features work correctly
+# Format: GIVEN-WHEN-THEN
+
+## Setup
+GIVEN: Clean environment
+WHEN: cd ~/git/hub/lcode
+THEN: Ready to test
+
+## Feature: Basic Listing
+GIVEN: Repository with git repos
+WHEN: node index.mjs ~/git/hub 2 --list
+THEN: Should show list with language tags like [ts,js], [python], [go]
+
+## Feature: Language Detection - Single Language
+GIVEN: Repositories with different languages
+WHEN: node index.mjs ~/git/hub 2 --list --lang ts
+THEN: Should show only TypeScript projects with [ts] or [ts,js] tags
+
+WHEN: node index.mjs ~/git/hub 2 --list --lang python
+THEN: Should show only Python projects with [python] tag
+
+WHEN: node index.mjs ~/git/hub 2 --list --lang go
+THEN: Should show only Go projects with [go] tag
+
+WHEN: node index.mjs ~/git/hub 2 --list --lang java
+THEN: Should show only Java projects with [java] tag
+
+## Feature: Language Detection - Multiple Languages
+GIVEN: Need to filter by multiple languages
+WHEN: node index.mjs ~/git/hub 2 --list --lang ts,js
+THEN: Should show TypeScript OR JavaScript projects
+
+WHEN: node index.mjs ~/git/hub 2 --list --lang python,go
+THEN: Should show Python OR Go projects
+
+WHEN: node index.mjs ~/git/hub 2 --list --lang java,kotlin
+THEN: Should show Java OR Kotlin projects
+
+## Feature: Multi-Language Detection Display
+GIVEN: Projects with multiple languages
+WHEN: node index.mjs ~/git/hub 2 --list | grep -E "\[.*,.*\]"
+THEN: Should show repos with multiple languages like [ts,js], [python,c], [go,c]
+
+## Feature: Language Count
+GIVEN: Filtered results
+WHEN: node index.mjs ~/git/hub 2 --list --lang ts
+THEN: Should show "Filtered to X repositories with language(s): ts"
+
+## Feature: No Results
+GIVEN: Filter for non-existent language
+WHEN: node index.mjs ~/git/hub 2 --list --lang rust
+THEN: Should show "No repositories found with language(s): rust" OR show rust projects
+
+## Feature: Help Documentation
+GIVEN: User needs help
+WHEN: node index.mjs --help
+THEN: Should show --lang option with examples
+
+## Feature: Select with Language Filter
+GIVEN: Filtered TypeScript projects
+WHEN: node index.mjs ~/git/hub 2 --lang ts --list
+THEN: Note the first index (e.g., 0)
+
+WHEN: node index.mjs ~/git/hub 2 --lang ts --select 0 "echo 'test'"
+THEN: Should select first TypeScript project and run command
+
+## Feature: Caching
+GIVEN: First scan completed
+WHEN: node index.mjs ~/git/hub 2 --list
+THEN: Should show "Using cached results (X repositories)"
+
+## Feature: Cache with Filter
+GIVEN: Cached results exist
+WHEN: node index.mjs ~/git/hub 2 --list --lang python
+THEN: Should use cache AND filter, showing "Using cached results" + "Filtered to X"
+
+## Feature: All Supported Languages
+GIVEN: Need to verify all language detection
+WHEN: node index.mjs ~/git/hub 2 --list | grep -oE "\[(ts|js|nx|python|java|kotlin|go|rust|ruby|php|csharp|c|cpp|other)\]" | sort | uniq
+THEN: Should show various language tags
+
+## Feature: Language Priority
+GIVEN: Project with both tsconfig.json and package.json
+WHEN: node index.mjs ~/git/hub 2 --list | grep "next-blog"
+THEN: Should show [ts,js] not just [js] (TypeScript prioritized)
+
+## Feature: Cleanup
+GIVEN: Testing complete
+WHEN: node index.mjs --cleanup
+THEN: Should remove config and cache
+
+## Feature: Init
+GIVEN: Fresh start
+WHEN: node index.mjs --init
+THEN: Should create interactive config (Ctrl+C to cancel)
+
+## Performance Test
+GIVEN: Large directory scan
+WHEN: time node index.mjs ~/git/hub 3 --list --lang ts
+THEN: Should complete in < 5 seconds (with cache)
+
+## Edge Cases
+GIVEN: Invalid language filter
+WHEN: node index.mjs ~/git/hub 2 --list --lang invalidlang
+THEN: Should show "No repositories found" or empty list
+
+GIVEN: Empty filter
+WHEN: node index.mjs ~/git/hub 2 --list --lang ""
+THEN: Should handle gracefully
+
+GIVEN: Case sensitivity
+WHEN: node index.mjs ~/git/hub 2 --list --lang TS
+THEN: Should NOT match (case-sensitive)
+
+## Integration with Other Options
+GIVEN: Combine depth and language
+WHEN: node index.mjs ~/git/hub 3 --list --lang ts
+THEN: Should scan depth 3 and filter TypeScript
+
+GIVEN: Different base path with language
+WHEN: node index.mjs ~/git 1 --list --lang python
+THEN: Should scan ~/git depth 1 for Python projects
+
+## Expected Language Mappings
+ts       -> tsconfig.json
+js       -> package.json (without tsconfig.json)
+nx       -> nx.json
+python   -> requirements.txt, setup.py, Pipfile
+java     -> pom.xml, build.gradle
+kotlin   -> build.gradle.kts, settings.gradle.kts
+go       -> go.mod
+rust     -> Cargo.toml
+ruby     -> Gemfile
+php      -> composer.json
+csharp   -> *.csproj
+c        -> Makefile
+cpp      -> CMakeLists.txt
+other    -> none of the above

@@ -5,7 +5,7 @@
     "type": "git",
     "url": "git+https://github.com/rkristelijn/lcode.git"
   },
-  "version": "2.3.1",
+  "version": "2.4.0",
   "main": "index.mjs",
   "bin": {
     "lcode": "index.mjs"
@@ -32,14 +32,13 @@
     "repository"
   ],
   "author": "rkristelijn",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@rkristelijn/lcode": "^2.1.0",
-    "glob": "^11.0.0",
-    "inquirer": "^9.3.7",
+    "glob": "^11.1.0",
+    "inquirer": "^9.3.8",
     "inquirer-autocomplete-prompt": "^3.0.1",
-    "ora": "^8.0.1"
+    "ora": "^8.2.0"
   },
   "devDependencies": {
     "eslint": "^8.57.0"

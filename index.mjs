@@ -6,7 +6,7 @@ import inquirer from 'inquirer';
 import inquirerAutocompletePrompt from 'inquirer-autocomplete-prompt';
 import { execSync } from 'child_process';
 import ora from 'ora';
-import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig, getReadmePreview } from './src/utils.mjs';
+import { expandHomeDir, isGitRepo, validateMaxDepth, getExecuteCommand, validateConfig, getReadmePreview, detectLanguages } from './src/utils.mjs';
 import { RepoCache } from './src/cache.mjs';
 import { createInteractiveConfig } from './src/config.mjs';
 
@@ -36,11 +36,16 @@ Options:
   --cleanup  Remove configuration file
   --list     List all repositories (non-interactive)
   --select N Select repository by index (0-based)
+  --lang L   Filter by language (js, ts, python, java, kotlin, go, rust, ruby, php, nx, other)
+             Can specify multiple: --lang ts,js or --lang java,kotlin
   --help     Show this help
 
 Examples:
   lcode                                    # Interactive mode
   lcode --list                            # List all repos
+  lcode --list --lang ts                  # List only TypeScript repos
+  lcode --list --lang ts,js               # List TypeScript or JavaScript repos
+  lcode --list --lang java,kotlin         # List Java or Kotlin repos
   lcode --select 0                        # Select first repo
   lcode ~ 5 --list                        # List repos from ~ with depth 5
   lcode ~ 5 --select 2 "code ."           # Select 3rd repo and open in VS Code
@@ -123,10 +128,16 @@ if (fs.existsSync(configPath)) {
 const selectIndex = process.argv.findIndex(arg => arg === '--select');
 const selectValue = selectIndex !== -1 ? process.argv[selectIndex + 1] : null;
 
-// Filter out --select and its value for normal arg parsing
+const langIndex = process.argv.findIndex(arg => arg === '--lang');
+const langFilterRaw = langIndex !== -1 ? process.argv[langIndex + 1] : null;
+const langFilters = langFilterRaw ? langFilterRaw.split(',').map(l => l.trim()) : null;
+
+// Filter out --select, --lang and their values for normal arg parsing
 const filteredArgs = process.argv.slice(2).filter((arg, index, arr) => {
   if (arg === '--select') return false;
   if (index > 0 && arr[index - 1] === '--select') return false;
+  if (arg === '--lang') return false;
+  if (index > 0 && arr[index - 1] === '--lang') return false;
   if (arg === '--list') return false;
   return true;
 });
@@ -208,12 +219,28 @@ const main = async () => {
       return;
     }
 
+    // Filter by language if specified
+    let filteredRepos = gitRepos;
+    if (langFilters) {
+      filteredRepos = gitRepos.filter(repo => {
+        const repoLangs = detectLanguages(repo);
+        return langFilters.some(filter => repoLangs.includes(filter));
+      });
+      if (filteredRepos.length === 0) {
+        console.log(`No repositories found with language(s): ${langFilters.join(', ')}`);
+        return;
+      }
+      console.log(`Filtered to ${filteredRepos.length} repositories with language(s): ${langFilters.join(', ')}`);
+    }
+
     // Non-interactive modes
     if (process.argv.includes('--list')) {
-      gitRepos.forEach((repo, index) => {
+      filteredRepos.forEach((repo, index) => {
         const relativePath = path.relative(BASE_DIR, repo) || path.basename(repo);
+        const langs = detectLanguages(repo);
+        const langDisplay = langs.join(',');
         const preview = getReadmePreview(repo, config.previewLength || 80);
-        const display = preview ? `${relativePath} - ${preview}` : relativePath;
+        const display = preview ? `${relativePath} [${langDisplay}] - ${preview}` : `${relativePath} [${langDisplay}]`;
         console.log(`${index}: ${display}`);
       });
       return;
@@ -221,12 +248,12 @@ const main = async () => {
 
     if (selectValue) {
       const index = parseInt(selectValue, 10);
-      if (isNaN(index) || index < 0 || index >= gitRepos.length) {
-        console.error(`✗ Invalid index ${index}. Available: 0-${gitRepos.length - 1}`);
+      if (isNaN(index) || index < 0 || index >= filteredRepos.length) {
+        console.error(`✗ Invalid index ${index}. Available: 0-${filteredRepos.length - 1}`);
         process.exit(1);
       }
       
-      const selectedRepo = gitRepos[index];
+      const selectedRepo = filteredRepos[index];
       const relativePath = path.relative(BASE_DIR, selectedRepo) || path.basename(selectedRepo);
       
       console.log(`→ Selected: ${relativePath}`);
@@ -240,11 +267,13 @@ const main = async () => {
     }
 
     // Interactive mode
-    const choices = gitRepos.map((repo) => {
+    const choices = filteredRepos.map((repo) => {
       const name = path.relative(BASE_DIR, repo) || path.basename(repo);
+      const langs = detectLanguages(repo);
+      const langDisplay = langs.join(',');
       const preview = getReadmePreview(repo, config.previewLength || 80);
       return {
-        name: preview ? `${name} - ${preview}` : name,
+        name: preview ? `${name} [${langDisplay}] - ${preview}` : `${name} [${langDisplay}]`,
         value: repo,
       };
     });
