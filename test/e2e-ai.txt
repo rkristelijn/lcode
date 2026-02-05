@@ -4,7 +4,7 @@
 
 ## Setup
 GIVEN: Clean environment
-WHEN: cd /Users/nlrxk0145/git/hub/lcode
+WHEN: cd ~/git/hub/lcode
 THEN: Ready to test
 
 ## Feature: Basic Listing
