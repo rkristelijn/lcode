@@ -5,10 +5,11 @@
     "type": "git",
     "url": "git+https://github.com/rkristelijn/lcode.git"
   },
-  "version": "2.4.0",
+  "version": "2.4.1",
   "main": "index.mjs",
   "bin": {
-    "lcode": "index.mjs"
+    "lcode": "index.mjs",
+    "lcode-mcp": "mcp-server.mjs"
   },
   "engines": {
     "node": ">=16"
@@ -35,6 +36,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "glob": "^11.1.0",
     "inquirer": "^9.3.8",
     "inquirer-autocomplete-prompt": "^3.0.1",

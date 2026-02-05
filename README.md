@@ -47,12 +47,25 @@ npm install -g @rkristelijn/lcode
 
 # Or use with npx (no installation)
 npx @rkristelijn/lcode
-
-# Kiro CLI MCP Integration
-kiro-cli mcp add --name "lcode" --command "npx" --args "@rkristelijn/lcode"
 ```
 
-📖 [Kiro CLI MCP Integration Guide](docs/mcp-integration.md)
+### MCP Integration (AI Assistants)
+
+lcode provides native Model Context Protocol (MCP) support for AI assistants like Kiro CLI:
+
+```bash
+# After global installation, add to ~/.kiro/settings/mcp.json
+{
+  "mcpServers": {
+    "lcode": {
+      "command": "lcode-mcp",
+      "args": []
+    }
+  }
+}
+```
+
+📖 [Full MCP Integration Guide](docs/mcp-integration.md)
 
 ### Basic Usage
 
